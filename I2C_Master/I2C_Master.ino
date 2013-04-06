@@ -1,10 +1,7 @@
-// 
 /*
 I2C Test - Master
-
-Note: you can't to bitwise ops on the typedef, don't know why. For example, don't do this:
- sensorInfo->mV   = i2CData[2] << 8;
- sensorInfo->mV  |= i2CData[3];
+I2C communication between two Arduinos. The master will make a request from the slave.  The slave will respond.
+In this example, the slave will send 14 bytes of data.  I have a combination of bytes, integer, long unisgned integer and float data
 
 */
 
