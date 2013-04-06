@@ -1,7 +1,7 @@
 /*
 I2C Test - Master
 I2C communication between two Arduinos. The master will make a request from the slave.  The slave will respond.
-In this example, the slave will send 14 bytes of data.  I have a combination of bytes, integer, long unisgned integer and float data
+In this example, the slave will send 14 bytes of data.  I have a combination of bytes, integer, long unsigned integer and float data
 
 */
 
@@ -56,9 +56,8 @@ void loop()
     Serial.print(sensor1.temp);
     Serial.print("\t");
     Serial.print(sensor1.myFloat);
-    Serial.print("\t");
+    Serial.print("    ");
     Serial.print(sensor1.mS);
-
     Serial.print("   RAM:");
     Serial.print(freeRam());
     Serial.println();
@@ -78,17 +77,17 @@ bool getData(RemoteSensorData_t* sensorInfo)
   float2bytes_t b2f;
   bool gotI2CPacket = false;    
   byte i=0;
-  byte i2CData[PACKET_SIZE];
+  byte i2CData[PACKET_SIZE];  // don't use char data type
   
   Wire.requestFrom(addrSlaveI2C, PACKET_SIZE);    // request data from I2C slave
   
-  while(Wire.available())    // slave may send less than requested
+  while(Wire.available())    // Wire.available() will return the number of bytes available to read
   { 
     i2CData[i++] = Wire.read(); // receive a byte of data
     gotI2CPacket = true;  // Flag to indicate sketch received I2C packet
   }
 
-  // If we got an I2C packet, we can extact the values
+  // If we got an I2C packet, we can extract the values
   if(gotI2CPacket)
   {
     gotI2CPacket = false;  // Reset flag
@@ -131,3 +130,4 @@ int freeRam () {
   int v; 
   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
 }
+

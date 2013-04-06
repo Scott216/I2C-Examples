@@ -7,8 +7,16 @@ Sends 14 bytes to Master.  Has a mix of data formats
 #include <Wire.h>     // http://arduino.cc/it/Reference/Wire
 #define PACKET_SIZE 14
 
+// convert float to byte array  source: http://mbed.org/forum/helloworld/topic/2053/
+typedef union float2bytes_t   // union consists of one variable represented in a number of different ways 
+{ 
+  float f; 
+  byte b[sizeof(float)]; 
+}; 
+
 const byte addrSlaveI2C =  21;  // I2C Slave address of this device
 byte I2C_Packet[PACKET_SIZE];            // Array to hold data sent over I2C to main Arduino
+bool printDataflag = false;
 
 void setup()
 {
@@ -24,13 +32,6 @@ void loop()
  uint32_t mS = millis();
  uint16_t mV = 3000;
  uint16_t temp = 75; 
-
- // convert float to byte array  source: http://mbed.org/forum/helloworld/topic/2053/
- typedef union float2bytes_t   // union consists of one variable represented in a number of different ways 
- { 
-    float f; 
-    byte b[sizeof(float)]; 
- }; 
  
  I2C_Packet[0] = addrSlaveI2C;
  I2C_Packet[1] = 2;  // command ID
@@ -49,24 +50,19 @@ void loop()
   I2C_Packet[8] = f2b.b[2];
   I2C_Packet[9] = f2b.b[3];
 
- // convert from an unsigned long int to a 4-byte array
- I2C_Packet[10] = (int)((mS >> 24) & 0xFF) ;
- I2C_Packet[11] = (int)((mS >> 16) & 0xFF) ;
- I2C_Packet[12] = (int)((mS >> 8) & 0XFF);
- I2C_Packet[13] = (int)((mS & 0XFF));
-
-  Serial.print(I2C_Packet[0]);
-  Serial.print("\t");
-  Serial.print(I2C_Packet[1]);
-  Serial.print("\t");
-  Serial.print(mV);
-  Serial.print("\t");
-  Serial.print(temp);
-  Serial.print("\t");
-  Serial.print(f2b.f);
-  Serial.print("\t");
-  Serial.println(mS);
-  delay(1000);
+  // convert from an unsigned long int to a 4-byte array
+  I2C_Packet[10] = (int)((mS >> 24) & 0xFF) ;
+  I2C_Packet[11] = (int)((mS >> 16) & 0xFF) ;
+  I2C_Packet[12] = (int)((mS >> 8) & 0XFF);
+  I2C_Packet[13] = (int)((mS & 0XFF));
+  
+  // Print out data every time the Master makes a request
+  if (printDataflag)
+  {
+    PrintData(I2C_Packet[0], I2C_Packet[1], mV, temp, f2b.f, mS);
+    printDataflag = false;
+  }
+  
 }
 
 // Send data to Master.  This is an interrupt driven event
@@ -74,6 +70,25 @@ void wireRequestEvent()
 {
   // Send byte array from panStamp. Main Arduino will decode bytes
   Wire.write(I2C_Packet, PACKET_SIZE); 
-} // wireRequestEvent()
+  printDataflag = true;
+  
+} 
+
+// Print out data that will be sent to the master
+void PrintData(byte sID, byte cID, uint16_t mV, uint16_t temp, float somefloat, uint32_t mS)
+{
+  Serial.print(sID);
+  Serial.print("\t");
+  Serial.print(cID);
+  Serial.print("\t");
+  Serial.print(mV);
+  Serial.print("\t");
+  Serial.print(temp);
+  Serial.print("\t");
+  Serial.print(somefloat);
+  Serial.print("    ");
+  Serial.println(mS);
+}
+
 
 
