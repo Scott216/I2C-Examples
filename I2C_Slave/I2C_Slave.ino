@@ -1,4 +1,8 @@
-// I2C Test - this is the slave
+/*
+I2C Test - this is the slave
+Sends 14 bytes to Master.  Has a mix of data formats
+
+*/
 
 #include <Wire.h>     // http://arduino.cc/it/Reference/Wire
 #define PACKET_SIZE 14
@@ -17,7 +21,6 @@ void setup()
 
 void loop()
 {
-
  uint32_t mS = millis();
  uint16_t mV = 3000;
  uint16_t temp = 75; 
@@ -51,33 +54,22 @@ void loop()
  I2C_Packet[11] = (int)((mS >> 16) & 0xFF) ;
  I2C_Packet[12] = (int)((mS >> 8) & 0XFF);
  I2C_Packet[13] = (int)((mS & 0XFF));
-  
 
- Serial.print(I2C_Packet[0]);
- Serial.print("\t");
- Serial.print(I2C_Packet[1]);
- Serial.print("\t");
- Serial.print(mV);
- Serial.print("\t");
- Serial.print(temp);
- Serial.print("\t");
- Serial.print(f2b.f);
- Serial.print("\t");
- Serial.println(mS);
-/*
- for(int k=0; k<PACKET_SIZE; k++)
- {
-   Serial.print(I2C_Packet[k]);
-   Serial.print(" ");
- }
- Serial.println();
-*/
- delay(1000);
- 
+  Serial.print(I2C_Packet[0]);
+  Serial.print("\t");
+  Serial.print(I2C_Packet[1]);
+  Serial.print("\t");
+  Serial.print(mV);
+  Serial.print("\t");
+  Serial.print(temp);
+  Serial.print("\t");
+  Serial.print(f2b.f);
+  Serial.print("\t");
+  Serial.println(mS);
+  delay(1000);
 }
 
-
-
+// Send data to Master.  This is an interrupt driven event
 void wireRequestEvent()
 {
   // Send byte array from panStamp. Main Arduino will decode bytes
