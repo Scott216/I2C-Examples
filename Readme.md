@@ -11,3 +11,11 @@ When wiring two Arduinos that are both 5 volts, I2C lines both use a 1.5k pull-u
 More info on the i2c.h library is can be found here: http://dsscircuits.com/articles/arduino-i2c-master-library.html
 
 
+                          Expecting   Actual
+leakinfo.sensor.stat          0        231
+leakinfo.sensor.sensorId     22          0
+leakinfo.sensor.sensortype    0          1
+leakinfo.sensor.isWet         0          0 
+leakinfo.sensor.temp         75      25344
+leakinfo.sensor.volts      3.14          0
+leakinfo.sensor.signal       88         155

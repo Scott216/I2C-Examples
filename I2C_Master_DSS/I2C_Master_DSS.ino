@@ -8,9 +8,6 @@ Slave arduino still needs to run wire.h library.  DSS library doesn't support sl
 
 Reference: http://dsscircuits.com/articles/arduino-i2c-master-library.html
 
-To do:
-If slave is offliine, sketch just hangs waiting for I2C data
-
 */
 
 typedef struct  {
