@@ -1,8 +1,10 @@
 /*
 I2C Test - this is the slave
+I2C communication between two Arduinos.  Use this with I2C_Master_DSS_struct.ino
+
 Sends 14 bytes to Master.  Put register map in a typedef struct and use a union to put in a byte array
 
-Connected to the slave arduino are some wireless water detectors and wired water detector.  
+Scenario for register map - Connected to the slave arduino are some wireless water detectors and wired water detector.  
 Both have a wet/dry status.  But the wireless also have temperature, voltage of wireless Tx battery, and wireless signal strength
 
 Register Map:
@@ -22,7 +24,6 @@ byte  Desc
 */
 
 #include <Wire.h>     // http://arduino.cc/it/Reference/Wire
-#define PACKET_SIZE 11
 
 typedef struct sensorData_t{
   byte stat;
@@ -38,6 +39,8 @@ typedef union I2C_Packet_t{
  sensorData_t sensor;
  byte I2CPacket[sizeof(sensorData_t)];
 };
+
+#define PACKET_SIZE sizeof(sensorData_t)
 
 I2C_Packet_t leakinfo;  
 

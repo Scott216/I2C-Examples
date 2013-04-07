@@ -1,6 +1,7 @@
 /*
 I2C Test - Master
-I2C communication between two Arduinos.
+I2C communication between two Arduinos.  Use this with I2C_Slave_struct.ino
+
 Uses DSS's I2C.h library, not the Wire.h library.
 Uses union and typedef struct to convert byte array from I2C back to usable varible
 
