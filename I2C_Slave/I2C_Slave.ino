@@ -1,5 +1,6 @@
 /*
-I2C Test - this is the slave
+I2C Test - this is the slave 
+Use with I2C_Master.ino or I2C_Master_DSS.ino
 Sends 14 bytes to Master.  Has a mix of data formats
 
 */

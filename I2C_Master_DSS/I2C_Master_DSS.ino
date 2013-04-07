@@ -1,5 +1,6 @@
 /*
 I2C Test - Master
+Use with I2C_Slave.ino
 I2C communication between two Arduinos. The master will make a request from the slave.  The slave will respond.
 In this example, the slave will send 14 bytes of data.  I have a combination of bytes, integer, long unisgned integer and float data
 
