@@ -29,7 +29,7 @@ I2C_Packet_t leakinfo;
 
 #include <I2C.h>   // https://github.com/rambo/I2C
 #define PACKET_SIZE 11     // I2C packet size
-#define addrSlaveI2C 21    // ID of I2C slave
+const uint8_t addrSlaveI2C = 21;    // ID of I2C slave.  Don't use #define
 
 // Function prototype
 int getData();
@@ -38,7 +38,7 @@ void setup ()
 {
   Serial.begin(9600);
   Serial.println(F("Initialize library for I2C Master Test"));
-  I2c.begin();
+  I2c.begin();  // enables the I2C hardware
   I2c.timeOut(10000);
   Serial.println(F("Finished setup"));
   
@@ -47,8 +47,16 @@ void setup ()
 
 void loop()
 {
+  static byte getSensorID; 
+  
+  // Alternate between sensors
+  if (getSensorID == 22)
+  { getSensorID = 23;}
+  else
+  { getSensorID = 22;}
+  
 
-  int i2cStatus = getData();
+  int i2cStatus = getData(getSensorID);  // get data for sensor # 22
   if( i2cStatus == 0)
   {
     Serial.print(leakinfo.sensor.stat);
@@ -76,12 +84,15 @@ void loop()
 
 
 // I2C Request data from slave
-int getData()
+int getData(uint8_t sensorID)
 {
+  // Tell slave which sensor we want data for                        
+  I2c.write(addrSlaveI2C, sensorID);  
+  
+  //get data for sensor defined above in I2c.write() and store in byteArray array
   byte byteArray[PACKET_SIZE];
-  int readstatus = I2c.read(addrSlaveI2C, PACKET_SIZE, byteArray ); //request data and store directly to i2CData array
-
-  // If we got an I2C packet, we can extact the values
+  int readstatus = I2c.read(addrSlaveI2C, PACKET_SIZE, byteArray ); 
+  // If we got an I2C packet, we can copy the values into the union leakinfo
   if(readstatus == 0)
   {
     for (int k=0; k < PACKET_SIZE; k++)
@@ -93,7 +104,7 @@ int getData()
   else
   { return readstatus; } // No Packet received
   
-} // end getData
+} // end getData()
 
 
 

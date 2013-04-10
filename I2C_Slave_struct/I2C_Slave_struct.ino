@@ -41,9 +41,12 @@ typedef union I2C_Packet_t{
 };
 
 #define PACKET_SIZE sizeof(sensorData_t)
+#define MAX_SENT_BYTES 2  // max bytes master can send
+#define ID 0 
 
 I2C_Packet_t leakinfo;  
 
+byte receivedCommands[2]; // Commands sent from master.  Only need one of the two bytes for now
 
 const byte addrSlaveI2C =  21;  // I2C Slave address of this device
 bool printDataflag = false;
@@ -54,19 +57,43 @@ void setup()
   Serial.println(F("Initialize wire library for slave I2C"));
   Wire.begin(addrSlaveI2C);    // Initiate the Wire library and join the I2C bus 
   Wire.onRequest(wireRequestEvent); // Register a function to be called when a master requests data from this slave device. 
+  Wire.onReceive(wireReceiveEvent); // Function to be called when master sends commands to slave
 }
 
 
 void loop()
 {
 
-  leakinfo.sensor.stat = 0; 
-  leakinfo.sensor.sensorId = 22; 
-  leakinfo.sensor.sensortype = 0; 
-  leakinfo.sensor.isWet = 0; 
-  leakinfo.sensor.temp = 75; 
-  leakinfo.sensor.volts = 3141 / 1000.0; 
-  leakinfo.sensor.signal = 88; 
+  switch (receivedCommands[ID])
+  {
+    case 22:
+      leakinfo.sensor.stat = 0; 
+      leakinfo.sensor.sensorId = receivedCommands[ID]; 
+      leakinfo.sensor.sensortype = 0; 
+      leakinfo.sensor.isWet = 0; 
+      leakinfo.sensor.temp = 75; 
+      leakinfo.sensor.volts = 3141 / 1000.0; 
+      leakinfo.sensor.signal = 88; 
+      break;
+    case 23:
+      leakinfo.sensor.stat = 0; 
+      leakinfo.sensor.sensorId = receivedCommands[ID]; 
+      leakinfo.sensor.sensortype = 1; 
+      leakinfo.sensor.isWet = 1; 
+      leakinfo.sensor.temp = 60; 
+      leakinfo.sensor.volts = 216 / 1000.0; 
+      leakinfo.sensor.signal = 79;     
+      break;
+    default:
+      leakinfo.sensor.stat = 1; 
+      leakinfo.sensor.sensorId = receivedCommands[ID]; 
+      leakinfo.sensor.sensortype = 0; 
+      leakinfo.sensor.isWet = 0; 
+      leakinfo.sensor.temp = 0; 
+      leakinfo.sensor.volts = 0; 
+      leakinfo.sensor.signal = 0;     
+      break;
+  }  // send switch
   
   
   // Print out data every time the Master makes a request
@@ -76,7 +103,7 @@ void loop()
     printDataflag = false;
   }
   
-}
+} // end loop()
 
 // Send data to Master.  This is an interrupt driven event
 void wireRequestEvent()
@@ -85,7 +112,21 @@ void wireRequestEvent()
   Wire.write(leakinfo.I2CPacket, PACKET_SIZE); 
   printDataflag = true;
   
-} 
+} // end wireRequestEvent()
+
+// Master is sending data to slave.  Data tells slave what to send back when it 
+// gets a wireRequestEvent
+void wireReceiveEvent(int bytesReceived)
+{
+  for (int a = 0; a < bytesReceived; a++)
+  {
+    if ( a < MAX_SENT_BYTES )
+    { receivedCommands[a] = Wire.read(); }
+   else
+   { Wire.read(); } // if we receive more data then allowed just throw it away
+  }  
+} // end wireReceiveEvent()
+
 
 // Print out data that will be sent to the master
 void PrintSensorData()
@@ -103,7 +144,7 @@ void PrintSensorData()
   Serial.print(leakinfo.sensor.volts);
   Serial.print("\t");
   Serial.println(leakinfo.sensor.signal);
-}
+}  // end PrintSensorData()
 
 // Print the byt array going out I2C
 void PrintI2CByteArray()
@@ -114,7 +155,7 @@ void PrintI2CByteArray()
     Serial.print("\t");
   }
   Serial.println();  
-}
+} // end PrintI2CByteArray()
 
 
 
