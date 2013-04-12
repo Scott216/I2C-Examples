@@ -81,7 +81,7 @@ void loop()
       leakinfo.sensor.sensortype = 1; 
       leakinfo.sensor.isWet = 1; 
       leakinfo.sensor.temp = 60; 
-      leakinfo.sensor.volts = 216 / 1000.0; 
+      leakinfo.sensor.volts = 216 / 100.0; 
       leakinfo.sensor.signal = 79;     
       break;
     default:

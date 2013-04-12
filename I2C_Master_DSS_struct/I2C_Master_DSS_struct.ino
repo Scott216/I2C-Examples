@@ -23,12 +23,10 @@ typedef union I2C_Packet_t {
  byte I2CPacket[sizeof(sensorData_t)];
 };
 
-#define PACKET_SIZE sizeof(sensorData_t)
-
-I2C_Packet_t leakinfo;
-
 #include <I2C.h>   // https://github.com/rambo/I2C
-#define PACKET_SIZE 11     // I2C packet size
+
+#define PACKET_SIZE sizeof(sensorData_t)
+I2C_Packet_t leakinfo;
 const uint8_t addrSlaveI2C = 21;    // ID of I2C slave.  Don't use #define
 
 // Function prototype
